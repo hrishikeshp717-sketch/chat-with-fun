@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Advanced Chat App</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .chat {
+      width: 350px;
+      background: #222;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    #messages {
+      height: 350px;
+      overflow-y: auto;
+      border: 1px solid #444;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+
+    .msg {
+      background: #2d89ff;
+      margin: 5px;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    input {
+      width: 70%;
+      padding: 5px;
+    }
+
+    button {
+      width: 25%;
+      padding: 5px;
+      background: green;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="chat">
+  <h3>Live Chat</h3>
+
+  <div id="messages"></div>
+
+  <input id="msg" placeholder="Type message..." />
+  <button onclick="send()">Send</button>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
+
+<script>
+  // 🔥 YOUR FIREBASE CONFIG HERE
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "XXXX",
+    appId: "XXXX"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const msgRef = db.ref("messages");
+
+  function send() {
+    let input = document.getElementById("msg");
+
+    if (input.value.trim() !== "") {
+      msgRef.push({
+        text: input.value
+      });
+
+      input.value = "";
+    }
+  }
+
+  msgRef.on("child_added", function(data) {
+    let msgBox = document.getElementById("messages");
+
+    let div = document.createElement("div");
+    div.className = "msg";
+    div.innerText = data.val().text;
+
+    msgBox.appendChild(div);
+    msgBox.scrollTop = msgBox.scrollHeight;
+  });
+</script>
+
+</body>
+</html>
